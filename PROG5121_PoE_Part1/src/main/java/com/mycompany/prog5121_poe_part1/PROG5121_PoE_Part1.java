@@ -31,7 +31,8 @@ public class PROG5121_PoE_Part1 {
         String regMessage = authSystem.registerUser(username, password, cellNumber);
         System.out.println(regMessage);
 
-        if (regMessage.equals("User successfully registered.")) {
+        // Check if registration process completed successfully
+        if (regMessage.contains("Username successfully captured.")) {
             System.out.println("\n=========================================");
             System.out.println("               USER LOGIN                ");
             System.out.println("=========================================");
@@ -54,4 +55,5 @@ public class PROG5121_PoE_Part1 {
         input.close();
     }
 }
+
 
