@@ -1,34 +1,55 @@
 package com.mycompany.prog5121_poe_part1;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MessageTest {
 
-    // Test Data Case 1 parameters mapped out on Page 15 of task rules
-    @Test
-    public void testCaseOneMessageVerification() {
-        String cell = "+27718693002"; 
-        String content = "Hi Mike, can you join us for dinner tonight?"; 
-        
-        Message msg1 = new Message(1, cell, content);
-        
-        // Assertions validation checks
-        assertTrue(msg1.getMessageContent().length() <= 250, "Message ready to send."); 
-        assertEquals("Cell phone number successfully captured.", msg1.checkRecipientCell()); 
-        assertNotNull(msg1.getMessageID());
-        assertTrue(msg1.checkMessageID());
+    @BeforeEach
+    public void setUp() {
+        PROG5121_PoE_Part1.initializeSystemData();
     }
 
-    // Test Data Case 2 parameters mapped out on Page 15/16 of task rules
     @Test
-    public void testCaseTwoMessageDisregardVerification() {
-        String cell = "0857597588"; 
-        String content = "Hi Keegan, did you receive the payment?"; 
-        
-        Message msg2 = new Message(2, cell, content);
-        
-        assertEquals("Cell phone number successfully captured.", msg2.checkRecipientCell()); 
-        assertEquals("Press 0 to delete the message", msg2.SentMessage(2)); 
+    public void testSentMessagesArrayPopulated() {
+        assertTrue(PROG5121_PoE_Part1.sentMessages.contains("Did you get the cake?"));
+        assertTrue(PROG5121_PoE_Part1.sentMessages.contains("It is dinner time !"));
+        assertEquals(2, PROG5121_PoE_Part1.sentMessages.size());
+    }
+
+    @Test
+    public void testDisplayLongestMessage() {
+        String expected = "Where are you? You are late! I have asked you to be on time.";
+        assertEquals(expected, PROG5121_PoE_Part1.getLongestMessage());
+    }
+
+    @Test
+    public void testSearchForMessageID() {
+        Message msg4 = PROG5121_PoE_Part1.masterCatalog.get(3);
+        String expected = "Recipient: 0838884567 | Message: It is dinner time !";
+        assertEquals(expected, PROG5121_PoE_Part1.searchByMessageID(msg4.getMessageID()));
+    }
+
+    @Test
+    public void testSearchMessagesByRecipient() {
+        String expected = "Where are you? You are late! I have asked you to be on time.\nOk, I am leaving without you.";
+        assertEquals(expected, PROG5121_PoE_Part1.searchByRecipient("+27838884567"));
+    }
+
+    @Test
+    public void testDeleteMessageUsingHash() {
+        Message msg2 = PROG5121_PoE_Part1.masterCatalog.get(1);
+        String expected = "Message \"Where are you? You are late! I have asked you to be on time.\" successfully deleted.";
+        assertEquals(expected, PROG5121_PoE_Part1.deleteByMessageHash(msg2.getMessageHash()));
+    }
+
+    @Test
+    public void testDisplayReport() {
+        String report = PROG5121_PoE_Part1.generateFullReport();
+        assertTrue(report.contains("Message Hash:"));
+        assertTrue(report.contains("Recipient:    +27834557896"));
+        assertTrue(report.contains("Message:      Did you get the cake?"));
+        assertTrue(report.contains("Message:      It is dinner time !"));
     }
 }
