@@ -18,6 +18,12 @@ An advanced, object-oriented Java console application simulating a secure Accoun
 * **String Metric Guard:** Enforces a maximum character string bound of 250 characters on all message text payloads, printing clear validation flags upon successful capture.
 * **Cryptographic Tally Hash:** Autogenerates an explicit, ALL-CAPS verification token string hash for every tracking entry by concatenating the first two digits of its random Message ID, the loop index counter sequence, and the first and last words of the text body.
 
+* **Part 3: Stored Messages & Reporting Engine:**
+  * Dynamically populates five parallel `ArrayList` collections (`sentMessages`, `disregardedMessages`, `storedMessages`, `messageHashes`, and `messageIDs`) without hard-coding.
+  * Implements physical JSON file serialization and parsing (`stored_messages.json`) using standard Java NIO file libraries.
+  * Adds **Option 4 (Stored Messages)** to the QuickChat Main Menu to view senders/recipients, find the longest stored message, search by Message ID or recipient cell number, delete records by Message Hash, and generate full message reports.
+  * Verified with 6 automated JUnit 5 tests executed via GitHub Actions CI/CD on JDK 25.
+
 ---
 
 ## 🛠️ Project Architecture
