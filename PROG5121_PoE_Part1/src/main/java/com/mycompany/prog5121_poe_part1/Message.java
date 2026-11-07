@@ -3,28 +3,22 @@ package com.mycompany.prog5121_poe_part1;
 import java.util.Random;
 
 public class Message {
-    
-    // Core object tracking attributes
     private String messageID;
     private int numMessagesSent;
     private String recipientCell;
     private String messageContent;
     private String messageHash;
-    private String status; // Sent, Disregarded, Stored
+    private String status; // Sent, Disregard, or Stored
 
-    // Constructor to initialize an internal tracking instance
-    public Message(int numMessagesSent, String recipientCell, String messageContent) {
+    public Message(int numMessagesSent, String recipientCell, String messageContent, String status) {
         this.numMessagesSent = numMessagesSent;
         this.recipientCell = recipientCell;
         this.messageContent = messageContent;
-        
-        // Autogenerate unique fields during construction
+        this.status = status;
         this.messageID = autogenerateMessageID();
         this.messageHash = createMessageHash();
-        this.status = "Pending";
     }
 
-    // Method: Generates a random 10-digit tracking key
     private String autogenerateMessageID() {
         Random rand = new Random();
         StringBuilder sb = new StringBuilder();
@@ -38,50 +32,27 @@ public class Message {
         return this.messageID != null && this.messageID.length() <= 10;
     }
 
-    // Method: Verifies recipient phone layout constraints
     public String checkRecipientCell() {
-        if (recipientCell.startsWith("+27") && recipientCell.length() == 12) {
-            return "Cell phone number successfully captured.";
-        } else if (recipientCell.startsWith("0") && recipientCell.length() == 10) {
+        if ((recipientCell.startsWith("+27") && recipientCell.length() == 12) || 
+            (recipientCell.startsWith("0") && recipientCell.length() == 10)) {
             return "Cell phone number successfully captured.";
         } else {
             return "Cell phone number is incorrectly formatted or does not contain an international code. Please correct the number and try again.";
         }
     }
 
-    // Method: Computes specific cryptographic layout string hashes
+    // Generates first 2 digits of ID, colons, message number, and first/last words in ALL CAPS
     public String createMessageHash() {
         String firstTwoID = this.messageID.substring(0, 2);
-        
         String cleanText = this.messageContent.trim();
         String[] words = cleanText.split("\\s+");
-        String firstWord = words[0];
-        String lastWord = words[words.length - 1];
+        String firstWord = words[0].replaceAll("[^a-zA-Z]", "");
+        String lastWord = words[words.length - 1].replaceAll("[^a-zA-Z]", "");
         
-        String hashResult = firstTwoID + ":" + this.numMessagesSent + ":" + firstWord + lastWord;
-        this.messageHash = hashResult.toUpperCase(); // Requirement: ALL CAPS
+        this.messageHash = (firstTwoID + ":" + this.numMessagesSent + ":" + firstWord + lastWord).toUpperCase();
         return this.messageHash;
     }
 
-    // Method: Handles operational workflow routing switches
-    public String SentMessage(int choice) {
-        switch (choice) {
-            case 1:
-                this.status = "Sent";
-                return "Message successfully sent";
-            case 2:
-                this.status = "Disregarded";
-                return "Press 0 to delete the message";
-            case 3:
-                this.status = "Stored";
-                return "Message successfully stored";
-            default:
-                this.status = "Disregarded";
-                return "Press 0 to delete the message";
-        }
-    }
-
-    // Method: Returns formatted metadata profiles
     public String printMessages() {
         return "Message ID: " + this.messageID + "\n" +
                "Message Hash: " + this.messageHash + "\n" +
@@ -89,18 +60,21 @@ public class Message {
                "Message: " + this.messageContent;
     }
 
-    public int returnTotalMessagess() {
-        return this.numMessagesSent;
-    }
-
-    public String storeMessage() {
-        return "{\n" +
-               "  \"messageID\": \"" + this.messageID + "\",\n" +
-               "  \"status\": \"" + this.status + "\"\n" +
-               "}";
+    // Formats object properties into a valid JSON object string
+    public String toJSON() {
+        String safeContent = this.messageContent.replace("\"", "\\\"");
+        return "  {\n" +
+               "    \"messageID\": \"" + this.messageID + "\",\n" +
+               "    \"recipient\": \"" + this.recipientCell + "\",\n" +
+               "    \"message\": \"" + safeContent + "\",\n" +
+               "    \"messageHash\": \"" + this.messageHash + "\",\n" +
+               "    \"status\": \"" + this.status + "\"\n" +
+               "  }";
     }
 
     public String getMessageID() { return messageID; }
+    public String getRecipientCell() { return recipientCell; }
     public String getMessageContent() { return messageContent; }
     public String getMessageHash() { return messageHash; }
+    public String getStatus() { return status; }
 }
